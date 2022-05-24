@@ -1,0 +1,42 @@
+<!doctype html>
+<html>
+<head>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.css" />
+</head>
+
+<body>
+<div id="fav"></div>
+
+<script type="text/javascript">
+// data source: https://data.gov.tw/dataset/126472
+
+let storage = window.localStorage;
+let today = new Date().toISOString().split('T')[0];
+
+let dataViewer = function (data) {
+      const container = document.getElementById('fav');
+      const hot = new Handsontable(container, {
+        data: data,
+        rowHeaders: true,
+        colHeaders: Object.keys(data[0]),
+        height: 'auto',
+        licenseKey: 'non-commercial-and-evaluation' // for non-commercial use only
+      });
+};
+
+let data = null;
+if (data = storage.getItem(today)) {
+  dataViewer(JSON.parse(data));
+} else {
+  fetch('https://data.coa.gov.tw/Service/OpenData/FromM/TAPData.aspx').then(res => {
+    res.json().then(data => {
+      storage.setItem(today, JSON.stringify(data));
+      dataViewer(data);
+    });
+  });
+}
+</script>
+
+</body>
+</html>
